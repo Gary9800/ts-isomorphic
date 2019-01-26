@@ -1,0 +1,6 @@
+{
+  "client": [
+    "/vendors.chunk.js",
+    "/client.js"
+  ]
+}
