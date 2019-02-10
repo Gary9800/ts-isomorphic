@@ -1,14 +1,15 @@
 import * as Koa from 'koa';
 import * as React from 'react';
-import http = require('http');
-
-
+// import ReactDOMServer from 'react-dom/server';
+// import Html from '../Html';
+// import App from './components/App';
+// import manifest from './chunk-manifest.json';
 
 function server(devServer: Koa): void {
   const app = devServer || new Koa()
 
   app.use(async (ctx: Koa.Context) => {
-    // console.log(34)
+    // console.log(23)
     ctx.body = 'hello'
   })
 

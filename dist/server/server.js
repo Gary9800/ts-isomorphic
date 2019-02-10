@@ -106,10 +106,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const Koa = __webpack_require__(/*! koa */ "koa");
+// import ReactDOMServer from 'react-dom/server';
+// import Html from '../Html';
+// import App from './components/App';
+// import manifest from './chunk-manifest.json';
 function server(devServer) {
     const app = devServer || new Koa();
     app.use((ctx) => __awaiter(this, void 0, void 0, function* () {
-        // console.log(34)
+        // console.log(23)
         ctx.body = 'hello';
     }));
     if (!devServer) {
