@@ -46,13 +46,19 @@ if (cluster.isMaster) {
   cluster.on('disconnect', (worker) => {
     console.log(`The worker #${worker.id} has disconnected`);
   });
+  app.use(async (ctx, next) => {
+    ctx.set('Access-Control-Allow-Origin', '*');
+    await next();
+  });
   app.use(webpackDevMiddleware(clientCompiler, {
-    publicPath: '/',
+    publicPath: 'http://localhost:3001/',
   }));
   app.use(webpackDevMiddleware(serverCompiler, {
     writeToDisk: true,
   }));
-  app.use(webpackHotMiddleware(clientCompiler));
+  app.use(webpackHotMiddleware(clientCompiler, {
+    path: "/__what",
+  }));
 
   serverCompiler.hooks.done.tap('server', stats => {
     Promise.all(proxy).then(() => {
@@ -64,11 +70,14 @@ if (cluster.isMaster) {
       };
     })
   });
+  app.listen(3001, () => {
+    console.info(`The server is running at http://localhost:${3001}/`);
+  });
 } else {
   (async function () {
     const app = new Koa();
     app.listen(3000, () => {
-      console.info(`The server is running at http://localhost:${3000}/`)
+      console.info(`The server is running at http://localhost:${3000}/`);
     });
     let server;
     let waitResolve;
@@ -94,6 +103,7 @@ if (cluster.isMaster) {
     });
 
     app.use(async function (ctx, next) {
+      ctx.set('Cache-Control', 'no-cache');
       await waitPromise;
       await next();
     });

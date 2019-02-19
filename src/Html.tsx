@@ -1,8 +1,16 @@
 import * as React from 'react';
 
-class Html extends React.Component {
+export interface Props {
+  title?: string,
+  styles?: Array<string>,
+  scripts?: Array<string>,
+  children: string,
+}
+
+class Html extends React.Component<Props, object> {
+
   render(): React.ReactNode {
-    const { title, styles, scripts, app, children } = this.props
+    const { title, styles = [], scripts = [], children } = this.props
     return <html className="no-js" lang="en">
       <head>
         <meta charSet="utf-8" />
@@ -24,4 +32,4 @@ class Html extends React.Component {
   }
 }
 
-export default Html
+export default Html;

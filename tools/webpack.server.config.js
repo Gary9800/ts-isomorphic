@@ -8,7 +8,7 @@ const nodeExternals = require('webpack-node-externals');
 const ROOT_DIR = path.resolve(__dirname, '../');
 const SRC_DIR = path.resolve(ROOT_DIR, 'src');
 const reScript = /\.(js|jsx|mjs)$/;
-const reStyle = /\.(css|less|styl|scss|sass)$/;
+const reStyle = /\.(css|styl|scss|sass)$/;
 const reImage = /\.(bpm|gif|jpg|jpeg|png|svg)$/;
 const staticAssetName = '[name].[ext]';
 const BUILD_DIR = path.resolve(ROOT_DIR, 'dist');
@@ -41,7 +41,7 @@ module.exports = {
     chunkFilename: 'chunks/[name].js',
   },
   externals: [
-    './chunk-manifest.json',
+    '../chunk-manifest.json',
     nodeExternals({
       whitelist: [reStyle, reImage],
     }),
@@ -49,18 +49,22 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.css$/,
+        test: reStyle,
         use: [
           {
             loader: MiniCssExtractPlugin.loader,
-          }, {
+          },
+          {
             loader: "css-loader",
             options: {
+              importLoaders: 1,
               sourceMap: false,
               modules: true,
               localIdentName: '[path]_[local]',
-              exportOnlyLocals: true,
+              exportOnlyLocals: false,
             }
+          }, {
+            loader: 'sass-loader'
           },
         ]
       },

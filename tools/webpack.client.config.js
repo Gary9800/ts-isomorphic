@@ -7,7 +7,7 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 const ROOT_DIR = path.resolve(__dirname, '../');
 const SRC_DIR = path.resolve(ROOT_DIR, 'src');
-const reStyle = /\.(css|less|styl|scss|sass)$/;
+const reStyle = /\.(css|styl|scss|sass)$/;
 const reImage = /\.(bpm|gif|jpg|jpeg|png|svg)$/;
 const staticAssetName = '[name].[ext]';
 const BUILD_DIR = path.resolve(ROOT_DIR, 'dist');
@@ -15,7 +15,7 @@ const BUILD_DIR = path.resolve(ROOT_DIR, 'dist');
 module.exports = {
   context: ROOT_DIR,
   mode: 'development',
-  devtool: 'source-map',
+  devtool: 'inline-source-map',
   name: 'client',
   resolve: {
     extensions: [".ts", ".tsx", ".js", ".json"],
@@ -28,7 +28,8 @@ module.exports = {
   },
   entry: {
     client: [
-      'webpack-hot-middleware/client',
+      'webpack-hot-middleware/client?path=http://localhost:3001/__what',
+      '@babel/polyfill',
       path.resolve(SRC_DIR, 'client/index.tsx'),
     ],
   },
@@ -36,7 +37,7 @@ module.exports = {
   output: {
     path: path.resolve(BUILD_DIR, 'client'),
     filename: '[name].js',
-    publicPath: '/',
+    publicPath: 'http://localhost:3001/',
     chunkFilename: '[name].chunk.js',
   },
   optimization: {
@@ -53,22 +54,62 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.css$/,
+        test: reStyle,
         use: [
           {
             loader: MiniCssExtractPlugin.loader,
           }, {
             loader: "css-loader",
             options: {
+              importLoaders: 1,
               sourceMap: false,
               modules: true,
               localIdentName: '[path]_[local]',
-              exportOnlyLocals: true,
+              exportOnlyLocals: false,
             }
+          }, {
+            loader: 'sass-loader'
           },
         ]
       },
-      { test: /\.tsx?$/, loader: "ts-loader" },
+      {
+        test: /\.tsx?$/,
+        exclude: /node_modules/,
+        use: [
+          {
+            loader: 'babel-loader',
+            options: { plugins: ['react-hot-loader/babel'] },
+          },
+          'ts-loader',
+        ],
+        // {
+        //   loader: 'babel-loader',
+        //   options: {
+        //     cacheDirectory: true,
+        //     babelrc: false,
+        //     presets: [
+        //       [
+        //         '@babel/preset-env',
+        //         {
+        //           targets: { browsers: 'last 2 versions' },
+        //           modules: false,
+        //         },
+        //       ],
+        //       [
+        //         '@babel/preset-typescript',
+        //         {
+        //           isTSX: true,
+        //           allExtensions: true,
+        //         },
+        //       ],
+        //       '@babel/preset-react',
+        //     ],
+        //     plugins: [
+        //       'react-hot-loader/babel'
+        //     ]
+        //   },
+        // },
+      },
       { enforce: "pre", test: /\.js$/, loader: "source-map-loader" },
       {
         test: reImage,
@@ -110,8 +151,7 @@ module.exports = {
     ],
   },
   externals: {
-    "react": "React",
-    "react-dom": "ReactDOM"
+
   },
   plugins: [
     new webpack.DefinePlugin({

@@ -87,6 +87,115 @@ module.exports =
 /************************************************************************/
 /******/ ({
 
+/***/ "../chunk-manifest.json":
+/*!*****************************************!*\
+  !*** external "../chunk-manifest.json" ***!
+  \*****************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("../chunk-manifest.json");
+
+/***/ }),
+
+/***/ "./src/Html.tsx":
+/*!**********************!*\
+  !*** ./src/Html.tsx ***!
+  \**********************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const React = __webpack_require__(/*! react */ "react");
+class Html extends React.Component {
+    render() {
+        const { title, styles = [], scripts = [], children } = this.props;
+        return React.createElement("html", { className: "no-js", lang: "en" },
+            React.createElement("head", null,
+                React.createElement("meta", { charSet: "utf-8" }),
+                React.createElement("meta", { httpEquiv: "x-ua-compatible", content: "ie=edge" }),
+                React.createElement("title", null, title),
+                React.createElement("meta", { name: "viewport", content: "width=device-width, initial-scale=1" }),
+                scripts.map(script => (React.createElement("link", { key: script, rel: "preload", href: script, as: "script" }))),
+                styles.map(style => (React.createElement("link", { key: style, rel: "stylesheet", href: style })))),
+            React.createElement("body", null,
+                React.createElement("div", { id: "app", dangerouslySetInnerHTML: { __html: children } }),
+                scripts.map(script => React.createElement("script", { key: script, src: script }))));
+    }
+}
+exports.default = Html;
+
+
+/***/ }),
+
+/***/ "./src/components/App/App.scss":
+/*!*************************************!*\
+  !*** ./src/components/App/App.scss ***!
+  \*************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+// extracted by mini-css-extract-plugin
+module.exports = {"root":"src-components-App-_root"};
+
+/***/ }),
+
+/***/ "./src/components/App/index.tsx":
+/*!**************************************!*\
+  !*** ./src/components/App/index.tsx ***!
+  \**************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/// <reference path="../../global.d.ts" />
+Object.defineProperty(exports, "__esModule", { value: true });
+const React = __webpack_require__(/*! react */ "react");
+const root_1 = __webpack_require__(/*! react-hot-loader/root */ "react-hot-loader/root");
+const styles = __webpack_require__(/*! ./App.scss */ "./src/components/App/App.scss");
+class App extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+    render() {
+        return React.createElement("div", { className: styles.root },
+            React.createElement("div", null, "hh"),
+            this.props.children);
+    }
+}
+let HotApp = App;
+if (false) {}
+exports.default = HotApp;
+
+
+/***/ }),
+
+/***/ "./src/components/Test/index.tsx":
+/*!***************************************!*\
+  !*** ./src/components/Test/index.tsx ***!
+  \***************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const React = __webpack_require__(/*! react */ "react");
+const root_1 = __webpack_require__(/*! react-hot-loader/root */ "react-hot-loader/root");
+function Hello() {
+    return React.createElement("div", null, "hello ts!");
+}
+;
+let HotApp = Hello;
+if (false) {}
+exports.default = HotApp;
+
+
+/***/ }),
+
 /***/ "./src/server/index.tsx":
 /*!******************************!*\
   !*** ./src/server/index.tsx ***!
@@ -96,6 +205,7 @@ module.exports =
 
 "use strict";
 
+/// <reference path="../global.d.ts" />
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -106,15 +216,37 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const Koa = __webpack_require__(/*! koa */ "koa");
-// import ReactDOMServer from 'react-dom/server';
-// import Html from '../Html';
-// import App from './components/App';
-// import manifest from './chunk-manifest.json';
+const React = __webpack_require__(/*! react */ "react");
+const ReactDOMServer = __webpack_require__(/*! react-dom/server */ "react-dom/server");
+const Html_1 = __webpack_require__(/*! ../Html */ "./src/Html.tsx");
+const App_1 = __webpack_require__(/*! ../components/App */ "./src/components/App/index.tsx");
+const Test_1 = __webpack_require__(/*! ../components/Test */ "./src/components/Test/index.tsx");
+const manifest = __webpack_require__(/*! ../chunk-manifest.json */ "../chunk-manifest.json");
 function server(devServer) {
+    const scripts = new Set();
+    const styles = new Set();
     const app = devServer || new Koa();
+    console.log(manifest);
+    const addChunk = (chunk) => {
+        if (manifest[chunk]) {
+            manifest[chunk]
+                .filter((asset) => asset.endsWith('.js'))
+                .forEach((asset) => scripts.add(asset));
+            manifest[chunk]
+                .filter((asset) => asset.endsWith('.css'))
+                .forEach((asset) => styles.add(asset));
+        }
+        else if (__DEV__) {
+            throw new Error(`Chunk with name '${chunk}' cannot be found`);
+        }
+    };
     app.use((ctx) => __awaiter(this, void 0, void 0, function* () {
-        // console.log(23)
-        ctx.body = 'hello';
+        addChunk('client');
+        const _styles = Array.from(styles);
+        const _scripts = Array.from(scripts);
+        const children = ReactDOMServer.renderToString(React.createElement(App_1.default, null,
+            React.createElement(Test_1.default, null)));
+        ctx.body = ReactDOMServer.renderToStaticMarkup(React.createElement(Html_1.default, { children: children, styles: _styles, scripts: _scripts }));
     }));
     if (!devServer) {
         app.listen(3000, () => {
@@ -147,6 +279,39 @@ module.exports = __webpack_require__(/*! /Users/gary/Documents/study/ts-isomorph
 /***/ (function(module, exports) {
 
 module.exports = require("koa");
+
+/***/ }),
+
+/***/ "react":
+/*!************************!*\
+  !*** external "react" ***!
+  \************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("react");
+
+/***/ }),
+
+/***/ "react-dom/server":
+/*!***********************************!*\
+  !*** external "react-dom/server" ***!
+  \***********************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("react-dom/server");
+
+/***/ }),
+
+/***/ "react-hot-loader/root":
+/*!****************************************!*\
+  !*** external "react-hot-loader/root" ***!
+  \****************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("react-hot-loader/root");
 
 /***/ })
 

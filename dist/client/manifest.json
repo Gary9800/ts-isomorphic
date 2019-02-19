@@ -1,6 +1,5 @@
 {
-  "client.js": "/client.js",
-  "client.js.map": "/client.js.map",
-  "vendors.js": "/vendors.chunk.js",
-  "vendors.js.map": "/vendors.chunk.js.map"
+  "client.css": "http://localhost:3001/client.css",
+  "client.js": "http://localhost:3001/client.js",
+  "vendors.js": "http://localhost:3001/vendors.chunk.js"
 }
