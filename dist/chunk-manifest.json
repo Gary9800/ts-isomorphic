@@ -2,7 +2,6 @@
   "client": [
     "http://localhost:3001/vendors.chunk.js",
     "http://localhost:3001/client.css",
-    "http://localhost:3001/client.js",
-    "http://localhost:3001/client.bd0bb39f2cc8cc805a9b.hot-update.js"
+    "http://localhost:3001/client.js"
   ]
 }

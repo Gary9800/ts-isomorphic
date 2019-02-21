@@ -6,13 +6,28 @@ import * as ReactDOMServer from 'react-dom/server';
 import Html from '../Html';
 import App from '../components/App';
 import Hello from '../components/Test';
-import manifest = require('../chunk-manifest.json');
+import fs = require('fs');
+import path = require('path');
 
-function server(devServer: Koa): void {
+interface Manifest {
+  [client: string]: Array<string>,
+};
+
+async function server(devServer: Koa) {
   const scripts: Set<string> = new Set();
   const styles: Set<string> = new Set();
   const app = devServer || new Koa();
-  console.log(manifest);
+  const manifest: Manifest = await new Promise((resolve, reject) => {
+    fs.readFile(path.resolve(__dirname, '../chunk-manifest.json'), { encoding: 'utf8' }, function (err, data) {
+      if (err) {
+        reject(err);
+        return;
+      };
+      resolve(JSON.parse(data));
+    });
+  });
+
+  console.log('[manifest]', manifest);
   const addChunk = (chunk: string) => {
     if (manifest[chunk]) {
       manifest[chunk]
@@ -20,7 +35,7 @@ function server(devServer: Koa): void {
         .forEach((asset: string) => scripts.add(asset));
       manifest[chunk]
         .filter((asset: string) => asset.endsWith('.css'))
-          .forEach((asset: string) => styles.add(asset));
+        .forEach((asset: string) => styles.add(asset));
     } else if (__DEV__) {
       throw new Error(`Chunk with name '${chunk}' cannot be found`);
     }
@@ -33,7 +48,7 @@ function server(devServer: Koa): void {
     const children: string = ReactDOMServer.renderToString(<App>
       <Hello />
     </App>);
-    
+
     ctx.body = ReactDOMServer.renderToStaticMarkup(<Html
       children={children}
       styles={_styles}

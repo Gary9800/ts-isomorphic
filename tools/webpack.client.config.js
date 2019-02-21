@@ -82,35 +82,7 @@ module.exports = {
           },
           'ts-loader',
         ],
-        // {
-        //   loader: 'babel-loader',
-        //   options: {
-        //     cacheDirectory: true,
-        //     babelrc: false,
-        //     presets: [
-        //       [
-        //         '@babel/preset-env',
-        //         {
-        //           targets: { browsers: 'last 2 versions' },
-        //           modules: false,
-        //         },
-        //       ],
-        //       [
-        //         '@babel/preset-typescript',
-        //         {
-        //           isTSX: true,
-        //           allExtensions: true,
-        //         },
-        //       ],
-        //       '@babel/preset-react',
-        //     ],
-        //     plugins: [
-        //       'react-hot-loader/babel'
-        //     ]
-        //   },
-        // },
       },
-      { enforce: "pre", test: /\.js$/, loader: "source-map-loader" },
       {
         test: reImage,
         oneOf: [

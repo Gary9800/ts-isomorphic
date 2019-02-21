@@ -87,17 +87,6 @@ module.exports =
 /************************************************************************/
 /******/ ({
 
-/***/ "../chunk-manifest.json":
-/*!*****************************************!*\
-  !*** external "../chunk-manifest.json" ***!
-  \*****************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-module.exports = require("../chunk-manifest.json");
-
-/***/ }),
-
 /***/ "./src/Html.tsx":
 /*!**********************!*\
   !*** ./src/Html.tsx ***!
@@ -221,38 +210,52 @@ const ReactDOMServer = __webpack_require__(/*! react-dom/server */ "react-dom/se
 const Html_1 = __webpack_require__(/*! ../Html */ "./src/Html.tsx");
 const App_1 = __webpack_require__(/*! ../components/App */ "./src/components/App/index.tsx");
 const Test_1 = __webpack_require__(/*! ../components/Test */ "./src/components/Test/index.tsx");
-const manifest = __webpack_require__(/*! ../chunk-manifest.json */ "../chunk-manifest.json");
+const fs = __webpack_require__(/*! fs */ "fs");
+const path = __webpack_require__(/*! path */ "path");
+;
 function server(devServer) {
-    const scripts = new Set();
-    const styles = new Set();
-    const app = devServer || new Koa();
-    console.log(manifest);
-    const addChunk = (chunk) => {
-        if (manifest[chunk]) {
-            manifest[chunk]
-                .filter((asset) => asset.endsWith('.js'))
-                .forEach((asset) => scripts.add(asset));
-            manifest[chunk]
-                .filter((asset) => asset.endsWith('.css'))
-                .forEach((asset) => styles.add(asset));
-        }
-        else if (__DEV__) {
-            throw new Error(`Chunk with name '${chunk}' cannot be found`);
-        }
-    };
-    app.use((ctx) => __awaiter(this, void 0, void 0, function* () {
-        addChunk('client');
-        const _styles = Array.from(styles);
-        const _scripts = Array.from(scripts);
-        const children = ReactDOMServer.renderToString(React.createElement(App_1.default, null,
-            React.createElement(Test_1.default, null)));
-        ctx.body = ReactDOMServer.renderToStaticMarkup(React.createElement(Html_1.default, { children: children, styles: _styles, scripts: _scripts }));
-    }));
-    if (!devServer) {
-        app.listen(3000, () => {
-            console.info(`The server is running at http://localhost:${3000}/`);
+    return __awaiter(this, void 0, void 0, function* () {
+        const scripts = new Set();
+        const styles = new Set();
+        const app = devServer || new Koa();
+        const manifest = yield new Promise((resolve, reject) => {
+            fs.readFile(path.resolve(__dirname, '../chunk-manifest.json'), { encoding: 'utf8' }, function (err, data) {
+                if (err) {
+                    reject(err);
+                    return;
+                }
+                ;
+                resolve(JSON.parse(data));
+            });
         });
-    }
+        console.log('[manifest]', manifest);
+        const addChunk = (chunk) => {
+            if (manifest[chunk]) {
+                manifest[chunk]
+                    .filter((asset) => asset.endsWith('.js'))
+                    .forEach((asset) => scripts.add(asset));
+                manifest[chunk]
+                    .filter((asset) => asset.endsWith('.css'))
+                    .forEach((asset) => styles.add(asset));
+            }
+            else if (__DEV__) {
+                throw new Error(`Chunk with name '${chunk}' cannot be found`);
+            }
+        };
+        app.use((ctx) => __awaiter(this, void 0, void 0, function* () {
+            addChunk('client');
+            const _styles = Array.from(styles);
+            const _scripts = Array.from(scripts);
+            const children = ReactDOMServer.renderToString(React.createElement(App_1.default, null,
+                React.createElement(Test_1.default, null)));
+            ctx.body = ReactDOMServer.renderToStaticMarkup(React.createElement(Html_1.default, { children: children, styles: _styles, scripts: _scripts }));
+        }));
+        if (!devServer) {
+            app.listen(3000, () => {
+                console.info(`The server is running at http://localhost:${3000}/`);
+            });
+        }
+    });
 }
 exports.default = server;
 
@@ -271,6 +274,17 @@ module.exports = __webpack_require__(/*! /Users/gary/Documents/study/ts-isomorph
 
 /***/ }),
 
+/***/ "fs":
+/*!*********************!*\
+  !*** external "fs" ***!
+  \*********************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("fs");
+
+/***/ }),
+
 /***/ "koa":
 /*!**********************!*\
   !*** external "koa" ***!
@@ -279,6 +293,17 @@ module.exports = __webpack_require__(/*! /Users/gary/Documents/study/ts-isomorph
 /***/ (function(module, exports) {
 
 module.exports = require("koa");
+
+/***/ }),
+
+/***/ "path":
+/*!***********************!*\
+  !*** external "path" ***!
+  \***********************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("path");
 
 /***/ }),
 
